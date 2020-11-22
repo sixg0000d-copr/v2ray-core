@@ -107,11 +107,11 @@ BuildRequires:  golang(h12.io/socks)
 %endif
 %endif
 
-Requires:       glibc
 %{?systemd_requires}
-Requires(pre):  shadow-utils
+Requires:       glibc
 Recommends:     v2ray-geoip
 Recommends:     v2ray-domain-list-community
+
 Provides:       %{shortname} = %{version}-%{release}
 Obsoletes:      %{shortname} < 4.32.1-2
 
