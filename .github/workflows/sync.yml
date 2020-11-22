@@ -1,0 +1,48 @@
+---
+name: Sync release version
+
+env:
+  # Upstream repo which you want to follow
+  UPSTREAM_REPO: v2fly/v2ray-core
+
+on:
+  watch:
+  schedule:
+    - cron: "0 13 * * *"
+
+jobs:
+  job:
+    name: Sync version from upstream
+    runs-on: ubuntu-latest
+
+    steps:
+      - id: get-release
+        name: Get latest release version from upstream
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          repository: ${{ env.UPSTREAM_REPO }}
+          excludes: prerelease, draft
+
+      - id: checkout
+        name: Checkout current repository
+        uses: actions/checkout@master
+
+      - id: get-versions
+        name: Get versions
+        run: |
+          echo "LOCAL_TAG=$(cat .copr/TAG)" >> $GITHUB_ENV
+          echo "UPSTREAM_TAG=${{ steps.get-release.outputs.release }}" >> $GITHUB_ENV
+
+      - id: update
+        name: Update local TAG
+        if: ${{ env.LOCAL_TAG != env.UPSTREAM_TAG }}
+        run: |
+          echo -n $UPSTREAM_TAG > .copr/TAG
+          echo -n 1 > .copr/RELEASE
+
+      - id: commit
+        name: Git auto commit
+        uses: stefanzweifel/git-auto-commit-action@master
+        with:
+          commit_message: Update from ${{ env.LOCAL_TAG }} to ${{ env.UPSTREAM_TAG }}
+          file_pattern: .copr/*
