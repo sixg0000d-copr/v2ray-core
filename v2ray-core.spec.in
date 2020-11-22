@@ -39,6 +39,14 @@ Source0:        %{gosource}
 %if %{with vendor}
 Source1:        vendor.tar.gz
 %endif
+# sed script files
+Source10:       systemd-rename-user.sed
+Source11:       systemd-multi-configs.sed
+# v2ray config file templates
+Source20:       empty.json
+Source21:       00_log.json
+Source22:       03_routing.json
+Source23:       06_outbounds.json
 
 
 BuildRequires:  systemd-rpm-macros
@@ -108,6 +116,7 @@ BuildRequires:  golang(h12.io/socks)
 %endif
 
 %{?systemd_requires}
+Requires(pre):  shadow-utils
 Requires:       glibc
 Recommends:     v2ray-geoip
 Recommends:     v2ray-domain-list-community
@@ -174,10 +183,15 @@ unset LDFLAGS BUILDTAGS
 # build: systemd unit files
 sed -e 's|/usr/local/bin|%{_bindir}|g' \
     -e 's|/usr/local/etc|%{_sysconfdir}|g' \
+    -f %{S:10} \
+%if 0%{?rhel}
+    -f %{S:11} \
+%endif
     %{v2ray_units}/v2ray.service > %{gobuilddir}/v2ray.service
 
 sed -e 's|/usr/local/bin|%{_bindir}|g' \
     -e 's|/usr/local/etc|%{_sysconfdir}|g' \
+    -f %{S:10} \
     %{v2ray_units}/v2ray@.service > %{gobuilddir}/v2ray@.service
 
 
@@ -192,7 +206,20 @@ install -m 0755 -vp %{gobuilddir}/bin/v2ray       %{buildroot}%{_bindir}/v2ray
 install -m 0755 -vp %{gobuilddir}/bin/v2ctl       %{buildroot}%{_bindir}/v2ctl
 # install: config file
 install -m 0755 -vd                               %{buildroot}%{_sysconfdir}/v2ray
+%if 0%{?rhel}
+install -m 0644 -vp %{S:20}                       %{buildroot}%{_sysconfdir}/v2ray/01_api.json
+install -m 0644 -vp %{S:20}                       %{buildroot}%{_sysconfdir}/v2ray/02_dns.json
+install -m 0644 -vp %{S:20}                       %{buildroot}%{_sysconfdir}/v2ray/04_policy.json
+install -m 0644 -vp %{S:20}                       %{buildroot}%{_sysconfdir}/v2ray/05_inbounds.json
+install -m 0644 -vp %{S:20}                       %{buildroot}%{_sysconfdir}/v2ray/07_transport.json
+install -m 0644 -vp %{S:20}                       %{buildroot}%{_sysconfdir}/v2ray/08_stats.json
+install -m 0644 -vp %{S:20}                       %{buildroot}%{_sysconfdir}/v2ray/09_reverse.json
+install -m 0644 -vp %{S:21}                       %{buildroot}%{_sysconfdir}/v2ray/00_log.json
+install -m 0644 -vp %{S:22}                       %{buildroot}%{_sysconfdir}/v2ray/03_routing.json
+install -m 0644 -vp %{S:23}                       %{buildroot}%{_sysconfdir}/v2ray/06_outbounds.json
+%else
 install -m 0644 -vp %{v2ray_config}/config.json   %{buildroot}%{_sysconfdir}/v2ray/config.json
+%endif
 # install: systemd unit files
 install -m 0755 -vd                               %{buildroot}%{_unitdir}
 install -m 0644 -vp %{gobuilddir}/v2ray.service   %{buildroot}%{_unitdir}/v2ray.service
@@ -222,7 +249,20 @@ go test \
 %{_bindir}/v2ctl
 # config file
 %dir %{_sysconfdir}/v2ray
+%if 0%{?rhel}
+%config(noreplace) %{_sysconfdir}/v2ray/00_log.json
+%config(noreplace) %{_sysconfdir}/v2ray/01_api.json
+%config(noreplace) %{_sysconfdir}/v2ray/02_dns.json
+%config(noreplace) %{_sysconfdir}/v2ray/03_routing.json
+%config(noreplace) %{_sysconfdir}/v2ray/04_policy.json
+%config(noreplace) %{_sysconfdir}/v2ray/05_inbounds.json
+%config(noreplace) %{_sysconfdir}/v2ray/06_outbounds.json
+%config(noreplace) %{_sysconfdir}/v2ray/07_transport.json
+%config(noreplace) %{_sysconfdir}/v2ray/08_stats.json
+%config(noreplace) %{_sysconfdir}/v2ray/09_reverse.json
+%else
 %config(noreplace) %{_sysconfdir}/v2ray/config.json
+%endif
 # systemd unit files
 %{_unitdir}/v2ray.service
 %{_unitdir}/v2ray@.service
@@ -235,6 +275,17 @@ go test \
 
 
 # Scriptlets >>
+%pre
+getent group %{shortname} >/dev/null || groupadd -r %{shortname}
+getent passwd %{shortname} >/dev/null || \
+    (useradd -r \
+    -g %{shortname} \
+    -d %{_localstatedir}/%{shortname} \
+    -s /sbin/nologin \
+    -c "User for running %{shortname}" %{shortname} && \
+    echo "  User %{shortname} created.")
+exit 0
+
 %post
 %systemd_post v2ray.service
 %systemd_post v2ray@.service
@@ -242,14 +293,19 @@ go test \
 %preun
 %systemd_preun v2ray.service
 
-if [ $1 -eq 0 ] && [ -x /usr/bin/systemctl ]; then
+if [ $1 -eq 0 ]; then
     # Package removal, not upgrade
-    # systemd_preun uses systemctl disable --now which doesn't work well with template services.
-    # See https://github.com/systemd/systemd/issues/15620
-    # The following lines mimicks its behaviour by running two commands:
-    # disable and stop all the v2ray services
-    systemctl --no-reload disable v2ray@.service || :
-    systemctl stop "v2ray@*.service" || :
+    if [ -x /usr/bin/systemctl ]; then
+        # systemd_preun uses systemctl disable --now which doesn't work well with template services.
+        # See https://github.com/systemd/systemd/issues/15620
+        # The following lines mimicks its behaviour by running two commands:
+        # disable and stop all the v2ray services
+        systemctl --no-reload disable v2ray@.service || :
+        systemctl stop "v2ray@*.service" || :
+    fi
+    if (getent passwd %{shortname} >/dev/null); then
+        echo "  You may should remove user v2ray mannually."
+    fi
 fi
 
 %postun

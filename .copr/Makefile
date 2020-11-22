@@ -43,7 +43,11 @@ sources: $(outdir) init
 	cd .. && \
 	rm -rf $(NAME)-$(VERSION)
 
-srpm: $(outdir) spec sources
+sources_custom: $(outdir)
+	cp $(SCM_ROOT)/*.sed $(outdir)
+	cp $(SCM_ROOT)/*.json $(outdir)
+
+srpm: $(outdir) spec sources sources_custom
 	rpmbuild --define "_sourcedir $(outdir)" \
 	         --define "_srcrpmdir $(outdir)" \
 	         -bs $(outdir)/$(NAME).spec
@@ -51,4 +55,4 @@ srpm: $(outdir) spec sources
 clean:
 	rm -rf $(outdir)
 
-.PHONY: default init spec sources srpm clean
+.PHONY: default init spec sources sources_custom srpm clean
