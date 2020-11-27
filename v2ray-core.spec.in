@@ -136,7 +136,7 @@ Obsoletes:      %{shortname} < 4.32.1-2
 %prep
 # prep: sources
 %if 0%{?rhel}
-%forgesetup
+%forgeautosetup
 %global gobuilddir %{_builddir}/%{archivename}/_build
 if [[ ! -e "%{gobuilddir}/bin" ]] ; then
     install -m 0755 -vd %{gobuilddir}/bin
