@@ -1,5 +1,5 @@
 # v2ray-core
-Build v2fly/v2ray-core on Fedora Copr
+Build [v2fly/v2ray-core](https://github.com/v2fly/v2ray-core) on Fedora copr
 
 [![Copr build status](https://copr.fedorainfracloud.org/coprs/sixg0000d/v2ray/package/v2ray-core/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/sixg0000d/v2ray/package/v2ray-core/)
 
@@ -20,7 +20,7 @@ dnf install v2ray-core
 systemctl enable v2ray.service --now
 ```
 
-## Build for your self
+## Build for yourself
 1. Follow the [guide](https://docs.fedoraproject.org/en-US/quick-docs/create-hello-world-rpm/#_development_environment) to install `rpmbuild`, `mock`.
 2. Make srpm:
 ```sh
