@@ -45,7 +45,6 @@ sources: $(outdir) init
 
 sources_custom: $(outdir)
 	cp $(SCM_ROOT)/*.sed $(outdir)
-	cp $(SCM_ROOT)/*.json $(outdir)
 
 srpm: $(outdir) spec sources sources_custom
 	rpmbuild --define "_sourcedir $(outdir)" \
