@@ -25,7 +25,7 @@ Name:           %{goname}
 Release:        @RELEASE@%{?dist}
 Summary:        A platform for building proxies to bypass network restrictions
 License:        MIT
-URL:            %{gourl}
+URL:            https://www.v2fly.org
 
 # Source is created by:
 # curl -L @SOURCE_URL@/archive/@TAG@/@NAME@-@VERSION@.tar.gz -o @NAME@-@VERSION@.tar.gz
