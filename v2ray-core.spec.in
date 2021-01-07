@@ -11,7 +11,7 @@ Version:                @VERSION@
 %global common_description %{expand:
 Project V is a set of network tools that help you to build your own computer
 network. It secures your network connections and thus protects your privacy.
-More detail Please check https://www.v2fly.org/}
+More detail Please check https://www.v2fly.org}
 
 %global shortname       v2ray
 %global goname          %{shortname}-core
@@ -93,7 +93,7 @@ go build \
     -buildmode pie \
     -compiler gc \
     -tags="rpm_crashtraceback confonly" \
-    -ldflags="-linkmode=external -X %{goipath}/version=@VERSION@ -B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \n')" \
+    -ldflags="-linkmode=external -X %{goipath}/version=%{version} -B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \n')" \
     -trimpath \
     -a -v \
     -o %{gobuilddir}/bin/v2ctl \
