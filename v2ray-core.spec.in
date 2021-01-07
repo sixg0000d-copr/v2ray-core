@@ -38,6 +38,7 @@ Source0:        %{gosource}
 Source1:        vendor.tar.gz
 # use created user for v2ray
 Source10:       systemd-create-user.sed
+Source11:       v2ray.sysusers
 
 BuildRequires:  systemd-rpm-macros
 
@@ -124,6 +125,11 @@ install -m 0644 -vp %{gobuilddir}/v2ray.service   %{buildroot}%{_unitdir}/v2ray.
 install -m 0644 -vp %{gobuilddir}/v2ray@.service  %{buildroot}%{_unitdir}/v2ray@.service
 # install: v2ray assets directory
 install -m 0755 -vd                               %{buildroot}%{_datadir}/v2ray
+%{?with_create_user:
+# install: v2ray sysuser config
+install -m 0755 -vd                               %{buildroot}%{_sysusersdir}
+install -m 0644 -vp %{S:11}                       %{buildroot}%{_sysusersdir}/v2ray.conf
+}
 
 
 %files
@@ -139,20 +145,15 @@ install -m 0755 -vd                               %{buildroot}%{_datadir}/v2ray
 %{_unitdir}/v2ray@.service
 # v2ray assets directory
 %dir %{_datadir}/v2ray
-
+# v2ray sysuser config
+%{?with_create_user:
+%{_sysusersdir}/v2ray.conf
+}
 
 # Scriptlets >>
 %{?with_create_user:
 %pre
-getent group %{shortname} >/dev/null || groupadd -r %{shortname}
-getent passwd %{shortname} >/dev/null || \
-    (useradd -r \
-    -g %{shortname} \
-    -d %{_localstatedir}/%{shortname} \
-    -s /sbin/nologin \
-    -c "User for running %{shortname}" %{shortname} && \
-    echo "  User %{shortname} created.")
-exit 0
+%sysusers_create_compat %{S:11}
 }
 
 %post
@@ -172,11 +173,6 @@ if [ $1 -eq 0 ]; then
         systemctl --no-reload disable v2ray@.service || :
         systemctl stop "v2ray@*.service" || :
     fi
-    %{?with_create_user:
-    if (getent passwd %{shortname} >/dev/null); then
-        echo "  You may need remove user v2ray mannually."
-    fi
-    }
 fi
 
 %postun
