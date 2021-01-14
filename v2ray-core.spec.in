@@ -147,6 +147,7 @@ install -m 0644 -vp %{S:11}                       %{buildroot}%{_sysusersdir}/v2
 %{_unitdir}/v2ray@.service
 # v2ray assets directory
 %dir %{_datadir}/v2ray
+%ghost %config(noreplace) %{_sysconfdir}/v2ray/config.json
 # v2ray sysuser config
 %{?with_create_user:
 %{_sysusersdir}/v2ray.conf
