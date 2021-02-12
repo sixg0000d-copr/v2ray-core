@@ -12,13 +12,13 @@ spec := $(or $(spec), $(SCM_ROOT)/$(NAME).spec)
 outdir := $(or $(outdir), $(SCM_ROOT)/outdir)
 
 
-default: srpm
+all: srpm
 
 init:
 ifeq ($(shell id -u),0)
-	dnf install -y "tar" "golang >= 1.11" "git"
+	dnf install -y "tar" "golang >= 1.11" "git" "sed"
 else
-	sudo dnf install -y "tar" "golang >= 1.11" "git"
+	sudo dnf install -y "tar" "golang >= 1.11" "git" "sed"
 endif
 
 $(outdir):
@@ -34,20 +34,24 @@ spec: $(outdir) $(spec).in
 	    $(spec).in > $(outdir)/$(NAME).spec
 
 sources: $(outdir) init
+	# download source archive and vendor
 	cd $(outdir) && \
 	curl -L $(SOURCE_URL)/archive/$(TAG)/$(NAME)-$(VERSION).tar.gz -o $(NAME)-$(VERSION).tar.gz && \
 	tar -xzf $(NAME)-$(VERSION).tar.gz && \
 	cd $(NAME)-$(VERSION) && \
-	go mod vendor && \
-	tar -czf ../vendor.tar.gz vendor && \
-	cd .. && \
-	rm -rf $(NAME)-$(VERSION)
+	go mod vendor
+	# compress vendor
+	cd $(outdir)/$(NAME)-$(VERSION) && \
+	tar -czf "$(outdir)/vendor.tar.gz" "vendor"
+	# build config and systemd unit files
+	cp "$(outdir)/$(NAME)-$(VERSION)/release/config/config.json" "$(outdir)/config.json"
+	sed -e "s|User=.*|DynamicUser=true|" "$(outdir)/$(NAME)-$(VERSION)/release/debian/v2ray.service" > "$(outdir)/v2ray.service"
+	sed -e "s|User=.*|DynamicUser=true|" "$(outdir)/$(NAME)-$(VERSION)/release/debian/v2ray@.service" > "$(outdir)/v2ray@.service"
+	sed -e "s|DynamicUser=true|User=v2ray\nDynamicUser=true|; s|-config|-confdir|g; s|/etc/v2ray/config.json|/etc/v2ray.confdir|g" "$(outdir)/v2ray.service" > "$(outdir)/v2ray-confdir.service"
+	# remove decompressed source archive
+	rm -rf $(outdir)/$(NAME)-$(VERSION)
 
-sources_custom: $(outdir)
-	cp $(SCM_ROOT)/*.sed          $(outdir)
-	cp $(SCM_ROOT)/v2ray.sysusers $(outdir)
-
-srpm: $(outdir) spec sources sources_custom
+srpm: $(outdir) spec sources
 	rpmbuild --define "_sourcedir $(outdir)" \
 	         --define "_srcrpmdir $(outdir)" \
 	         -bs $(outdir)/$(NAME).spec
@@ -55,4 +59,4 @@ srpm: $(outdir) spec sources sources_custom
 clean:
 	rm -rf $(outdir)
 
-.PHONY: default init spec sources sources_custom srpm clean
+.PHONY: all init spec sources srpm clean

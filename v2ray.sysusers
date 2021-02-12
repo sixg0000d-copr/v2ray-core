@@ -1,2 +1,0 @@
-#Type Name   ID  GECOS                        Home directory  Shell
-u     v2ray  -   "User for running v2ray"     /run/v2ray      /sbin/nologin
