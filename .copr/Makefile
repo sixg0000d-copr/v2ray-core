@@ -10,16 +10,18 @@ DATE := $(shell LC_ALL=en_US.UTF-8 date +'%a %b %d %Y')
 # ENVIRONMENTS
 spec := $(or $(spec), $(SCM_ROOT)/$(NAME).spec)
 outdir := $(or $(outdir), $(SCM_ROOT)/outdir)
+# PACKAGE MANAGEMER INSTALL COMMAND
+ifeq ($(shell id -u),0)
+pm_install := dnf -y install
+else
+pm_install := sudo dnf -y install
+endif
 
 
 all: srpm
 
 init:
-ifeq ($(shell id -u),0)
-	dnf install -y "tar" "golang >= 1.11" "git" "sed"
-else
-	sudo dnf install -y "tar" "golang >= 1.11" "git" "sed"
-endif
+	$(pm_install) "@RPM Development Tools" "tar" "git" "sed" "golang >= 1.11"
 
 $(outdir):
 	[ -d "$(outdir)" ] || mkdir -p $(outdir)
