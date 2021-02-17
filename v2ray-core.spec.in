@@ -7,11 +7,6 @@ Version:                @VERSION@
 
 %gometa
 
-%global common_description %{expand:
-Project V is a set of network tools that help you to build your own computer
-network. It secures your network connections and thus protects your privacy.
-For more details, please check https://www.v2fly.org}
-
 %global shortname       v2ray
 %global goname          %{shortname}-core
 %global golicenses      LICENSE
@@ -21,9 +16,14 @@ Name:           %{goname}
 Release:        @RELEASE@%{?dist}
 Summary:        A platform for building proxies to bypass network restrictions
 License:        MIT
-URL:            https://www.v2fly.org
+URL:            https://www.v2fly.org/
 
-# Source is created by:
+%global common_description %{expand:
+Project V is a set of network tools that help you to build your own computer
+network. It secures your network connections and thus protects your privacy.
+For more details please see %{url}}
+
+# Sources is created by:
 # cd outdir
 # curl -L @SOURCE_URL@/archive/@TAG@/@NAME@-@VERSION@.tar.gz -o @NAME@-@VERSION@.tar.gz
 # tar -xzf @NAME@-@VERSION@.tar.gz
@@ -33,6 +33,7 @@ URL:            https://www.v2fly.org
 # tar -czf "outdir/vendor.tar.gz" "vendor"
 Source0:        %{gosource}
 Source1:        vendor.tar.gz
+# Sources is created by:
 # cp "outdir/@NAME@-@VERSION@/release/config/config.json" "outdir/config.json"
 # sed -e "s|User=.*|DynamicUser=true|" "outdir/@NAME@-@VERSION@/release/debian/v2ray.service" > "outdir/v2ray.service"
 # sed -e "s|User=.*|DynamicUser=true|" "outdir/@NAME@-@VERSION@/release/debian/v2ray@.service" > "outdir/v2ray@.service"
@@ -242,4 +243,4 @@ fi
 %changelog
 * @DATE@ sixg0000d <sixg0000d@gmail.com> - @VERSION@-@RELEASE@
 - Update package
-- For more changelogs, please check: @SOURCE_URL@/releases/tag/@TAG@
+- For more details, please see: @SOURCE_URL@/releases/tag/@TAG@
