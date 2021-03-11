@@ -10,7 +10,7 @@ DATE := $(shell LC_ALL=en_US.UTF-8 date +'%a %b %d %Y')
 # ENVIRONMENTS
 spec := $(or $(spec), $(SCM_ROOT)/$(NAME).spec)
 outdir := $(or $(outdir), $(SCM_ROOT)/outdir)
-# PACKAGE MANAGEMER INSTALL COMMAND
+# PACKAGE MANAGER INSTALL COMMAND
 ifeq ($(shell id -u),0)
 pm_install := dnf -y install
 else
