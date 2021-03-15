@@ -28,7 +28,6 @@ For more details please see %{url}}
 # tar -xzf @NAME@-@VERSION@.tar.gz
 # cd @NAME@-@VERSION@
 # go mod vendor
-# cd outdir/@NAME@-@VERSION@
 # tar -czf "outdir/vendor.tar.gz" "vendor"
 Source0:        %{gosource}
 Source1:        vendor.tar.gz
