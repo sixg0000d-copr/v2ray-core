@@ -45,10 +45,9 @@ Source22:       v2ray-confdir.service
 BuildRequires:  systemd-rpm-macros
 
 %{?systemd_requires}
-Requires:       glibc
 Requires:       systemd >= 232
-Recommends:     v2ray-geoip
-Recommends:     v2ray-domain-list-community
+Recommends:     %{_datadir}/v2ray/geoip.dat
+Recommends:     %{_datadir}/v2ray/geosite.dat
 
 Provides:       %{shortname} = %{version}-%{release}
 Obsoletes:      %{shortname} < 4.32.1-2
