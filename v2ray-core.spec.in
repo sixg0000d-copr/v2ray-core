@@ -181,7 +181,7 @@ fi
 %systemd_post v2ray-confdir.service
 # Initial multiple config files when initial installation
 if [ $1 -eq 1 ]; then
-    for BASE in 01_api 02_dns 04_policy 05_inbounds 07_transport 08_stats 09_reverse; do
+    for BASE in 01_api 02_dns 04_policy 05_inbounds 07_transport 08_stats 09_reverse 10_fakedns 11_browserForwarder; do
         echo "{}" > "%{_sysconfdir}/v2ray.confdir/${BASE}.json" || :
     done
 # 00_log.json
