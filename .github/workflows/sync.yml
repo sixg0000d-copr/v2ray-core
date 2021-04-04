@@ -21,7 +21,7 @@ jobs:
         uses: pozetroninc/github-action-get-latest-release@master
         with:
           repository: ${{ env.UPSTREAM_REPO }}
-          excludes: prerelease, draft
+          excludes: draft
 
       - id: checkout
         name: Checkout current repository
