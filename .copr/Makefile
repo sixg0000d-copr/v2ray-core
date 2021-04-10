@@ -34,7 +34,7 @@ spec: $(outdir) $(spec).in
 	-e "s|@VERSION@|$(VERSION)|g" \
 	-e "s|@RELEASE@|$(RELEASE)|g" \
 	-e "s|@DATE@|$(DATE)|g" \
-	$(spec).in > $(outdir)/$(NAME).spec
+	$(spec).in >$(outdir)/$(NAME).spec
 
 sources: $(outdir) init
 	# download source archive and vendor
