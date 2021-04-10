@@ -27,13 +27,14 @@ $(outdir):
 	[ -d "$(outdir)" ] || mkdir -p $(outdir)
 
 spec: $(outdir) $(spec).in
-	sed -e "s|@SOURCE_URL@|$(SOURCE_URL)|g" \
-	    -e "s|@NAME@|$(NAME)|g" \
-	    -e "s|@TAG@|$(TAG)|g" \
-	    -e "s|@VERSION@|$(VERSION)|g" \
-	    -e "s|@RELEASE@|$(RELEASE)|g" \
-	    -e "s|@DATE@|$(DATE)|g" \
-	    $(spec).in > $(outdir)/$(NAME).spec
+	sed \
+	-e "s|@SOURCE_URL@|$(SOURCE_URL)|g" \
+	-e "s|@NAME@|$(NAME)|g" \
+	-e "s|@TAG@|$(TAG)|g" \
+	-e "s|@VERSION@|$(VERSION)|g" \
+	-e "s|@RELEASE@|$(RELEASE)|g" \
+	-e "s|@DATE@|$(DATE)|g" \
+	$(spec).in > $(outdir)/$(NAME).spec
 
 sources: $(outdir) init
 	# download source archive and vendor
@@ -44,19 +45,24 @@ sources: $(outdir) init
 	go mod vendor
 	# compress vendor
 	cd $(outdir)/$(NAME)-$(VERSION) && \
-	tar -czf "$(outdir)/vendor.tar.gz" "vendor"
+	tar -czf $(outdir)/vendor.tar.gz vendor
 	# build config and systemd unit files
-	cp "$(outdir)/$(NAME)-$(VERSION)/release/config/config.json" "$(outdir)/config.json"
-	sed -e "s|User=.*|DynamicUser=true|" "$(outdir)/$(NAME)-$(VERSION)/release/debian/v2ray.service" > "$(outdir)/v2ray.service"
-	sed -e "s|User=.*|DynamicUser=true|" "$(outdir)/$(NAME)-$(VERSION)/release/debian/v2ray@.service" > "$(outdir)/v2ray@.service"
-	sed -e "s|DynamicUser=true|User=v2ray\nDynamicUser=true|; s|-config|-confdir|g; s|/etc/v2ray/config.json|/etc/v2ray.confdir|g" "$(outdir)/v2ray.service" > "$(outdir)/v2ray-confdir.service"
+	cp $(outdir)/$(NAME)-$(VERSION)/release/config/config.json $(outdir)/config.json
+	sed -e "s|User=.*|DynamicUser=true|" $(outdir)/$(NAME)-$(VERSION)/release/debian/v2ray.service >$(outdir)/v2ray.service
+	sed -e "s|User=.*|DynamicUser=true|" $(outdir)/$(NAME)-$(VERSION)/release/debian/v2ray@.service >$(outdir)/v2ray@.service
+	sed \
+	-e "/\[Service\]/a User=v2ray" \
+	-e "s|-config|-confdir|g" \
+	-e "s|/etc/v2ray/config.json|/etc/v2ray.confdir|g" \
+	$(outdir)/v2ray.service >$(outdir)/v2ray-confdir.service
 	# remove decompressed source archive
 	rm -rf $(outdir)/$(NAME)-$(VERSION)
 
 srpm: $(outdir) spec sources
-	rpmbuild --define "_sourcedir $(outdir)" \
-	         --define "_srcrpmdir $(outdir)" \
-	         -bs $(outdir)/$(NAME).spec
+	rpmbuild \
+	--define "_sourcedir $(outdir)" \
+	--define "_srcrpmdir $(outdir)" \
+	-bs $(outdir)/$(NAME).spec
 
 clean:
 	rm -rf $(outdir)

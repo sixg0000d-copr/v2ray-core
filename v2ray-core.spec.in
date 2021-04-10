@@ -28,15 +28,18 @@ For more details please see %{url}}
 # tar -xzf @NAME@-@VERSION@.tar.gz
 # cd @NAME@-@VERSION@
 # go mod vendor
-# tar -czf "outdir/vendor.tar.gz" "vendor"
+# tar -czf outdir/vendor.tar.gz vendor
 Source0:        %{gosource}
 Source1:        vendor.tar.gz
 # Sources is created by:
-# cp "outdir/@NAME@-@VERSION@/release/config/config.json" "outdir/config.json"
-# sed -e "s|User=.*|DynamicUser=true|" "outdir/@NAME@-@VERSION@/release/debian/v2ray.service" > "outdir/v2ray.service"
-# sed -e "s|User=.*|DynamicUser=true|" "outdir/@NAME@-@VERSION@/release/debian/v2ray@.service" > "outdir/v2ray@.service"
-# sed -e "s|-config|-confdir|g; s|/etc/v2ray/config.json|/etc/v2ray.confdir|g" "outdir/v2ray.service" > "outdir/v2ray-confdir.service"
-# rm -rf outdir/@NAME@-@VERSION@
+# cp outdir/@NAME@-@VERSION@/release/config/config.json outdir/config.json
+# sed -e "s|User=.*|DynamicUser=true|" outdir/$(NAME)-$(VERSION)/release/debian/v2ray.service >outdir/v2ray.service
+# sed -e "s|User=.*|DynamicUser=true|" outdir/$(NAME)-$(VERSION)/release/debian/v2ray@.service >outdir/v2ray@.service
+# sed \
+# -e "/\[Service\]/a User=v2ray" \
+# -e "s|-config|-confdir|g" \
+# -e "s|/etc/v2ray/config.json|/etc/v2ray.confdir|g" \
+# outdir/v2ray.service >outdir/v2ray-confdir.service
 Source10:       config.json
 Source20:       v2ray.service
 Source21:       v2ray@.service
