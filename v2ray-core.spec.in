@@ -11,11 +11,11 @@ Version:                @VERSION@
 %global golicenses      LICENSE
 %global godocs          README.md SECURITY.md
 
-Name:           %{goname}
-Release:        @RELEASE@%{?dist}
-Summary:        A platform for building proxies to bypass network restrictions
-License:        MIT
-URL:            https://www.v2fly.org/
+Name:                   %{goname}
+Release:                @RELEASE@%{?dist}
+Summary:                A platform for building proxies to bypass network restrictions
+License:                MIT
+URL:                    https://www.v2fly.org/
 
 %global common_description %{expand:
 Project V is a set of network tools that help you to build your own computer
@@ -57,6 +57,7 @@ Obsoletes:      %{shortname} < 4.32.1-2
 
 %package -n %{shortname}-confdir
 Summary:        Enable multiple config for v2ray
+%{?systemd_requires}
 Requires:       systemd >= 232
 Requires:       %{name}%{?_isa} = %{version}-%{release}
 
