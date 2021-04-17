@@ -18,7 +18,7 @@ init:
 	# install go 1.16.3
 	curl -L https://golang.org/dl/go1.16.3.linux-amd64.tar.gz -o go1.16.3.linux-amd64.tar.gz
 	rm -rf /usr/local/go && tar -C /usr/local -xzf go1.16.3.linux-amd64.tar.gz
-	export PATH=$PATH:/usr/local/go/bin
+export PATH := $(PATH):/usr/local/go/bin
 else
 init:
 	sudo dnf -y install git golang
