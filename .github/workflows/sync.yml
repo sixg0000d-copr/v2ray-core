@@ -16,6 +16,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - id: checkout
+        name: Checkout current repository
+        uses: actions/checkout@v2
+
       - id: get-release
         name: Get latest release version from upstream
         uses: pozetroninc/github-action-get-latest-release@master
@@ -23,26 +27,23 @@ jobs:
           repository: ${{ env.UPSTREAM_REPO }}
           excludes: draft
 
-      - id: checkout
-        name: Checkout current repository
-        uses: actions/checkout@master
-
       - id: get-versions
         name: Get versions
         run: |
-          echo "LOCAL_TAG=$(cat .copr/TAG)" >> $GITHUB_ENV
-          echo "UPSTREAM_TAG=${{ steps.get-release.outputs.release }}" >> $GITHUB_ENV
+          echo "CURRENT_VERSION=$(awk '/Version:/ { print $2 }' v2ray-core.spec)" >> $GITHUB_ENV
+          echo "LATEST_VERSION=$(echo ${{ steps.get-release.outputs.release }} | sed 's/v//g')" >> $GITHUB_ENV
 
-      - id: update
-        name: Update local TAG
-        if: ${{ env.LOCAL_TAG != env.UPSTREAM_TAG }}
+      - id: bump-version
+        if: ${{ env.CURRENT_VERSION != env.LATEST_VERSION }}
+        name: Update specfile version
         run: |
-          echo -n $UPSTREAM_TAG > .copr/TAG
-          echo -n 1 > .copr/RELEASE
+          sed -E -i "s/(Version:\s+).*/\1${{ env.LATEST_VERSION }}/g" v2ray-core.spec
+          sed -E -i "s/(Release:\s+).*/\11%{?dist}/g" v2ray-core.spec
+          sed -E -i "/%changelog/a * $(LANG=C date +'%a %b %d %Y') sixg0000d <sixg0000d@gmail.com> - ${{ env.LATEST_VERSION }}-1\n- Update to ${{ env.LATEST_VERSION }}\n" v2ray-core.spec
 
       - id: commit
         name: Git auto commit
-        uses: stefanzweifel/git-auto-commit-action@master
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Update from ${{ env.LOCAL_TAG }} to ${{ env.UPSTREAM_TAG }}
-          file_pattern: .copr/*
+          commit_message: Update from ${{ env.CURRENT_VERSION }} to ${{ env.LATEST_VERSION }}
+          file_pattern: v2ray-core.spec

@@ -1,70 +1,51 @@
 MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-SCM_ROOT := $(abspath $(MAKEFILE_DIR)/..)
-# SPECS
-SOURCE_URL := https://github.com/v2fly/v2ray-core
-NAME := v2ray-core
-TAG := $(shell cat $(MAKEFILE_DIR)/TAG)
-VERSION := $(patsubst v%,%,$(TAG))
-RELEASE := $(shell cat $(MAKEFILE_DIR)/RELEASE)
-DATE := $(shell LC_ALL=en_US.UTF-8 date +'%a %b %d %Y')
-# ENVIRONMENTS
-spec := $(or $(spec), $(SCM_ROOT)/$(NAME).spec)
-outdir := $(or $(outdir), $(SCM_ROOT)/outdir)
-# PACKAGE MANAGER INSTALL COMMAND
-ifeq ($(shell id -u),0)
-pm_install := dnf -y install
-else
-pm_install := sudo dnf -y install
-endif
+PROJECT_ROOT := $(abspath $(MAKEFILE_DIR)/..)
 
+spec := $(or $(spec), $(PROJECT_ROOT)/v2ray-core.spec)
+outdir := $(or $(outdir), $(PROJECT_ROOT)/outdir)
+name := $(shell awk '/Name:/ { print $$2 }' $(spec))
+version := $(shell awk '/Version:/ { print $$2 }' $(spec))
 
 all: srpm
-
-init:
-	$(pm_install) "@RPM Development Tools" "tar" "git" "sed" "golang >= 1.11"
 
 $(outdir):
 	[ -d "$(outdir)" ] || mkdir -p $(outdir)
 
-spec: $(outdir) $(spec).in
-	sed \
-	-e "s|@SOURCE_URL@|$(SOURCE_URL)|g" \
-	-e "s|@NAME@|$(NAME)|g" \
-	-e "s|@TAG@|$(TAG)|g" \
-	-e "s|@VERSION@|$(VERSION)|g" \
-	-e "s|@RELEASE@|$(RELEASE)|g" \
-	-e "s|@DATE@|$(DATE)|g" \
-	$(spec).in >$(outdir)/$(NAME).spec
+ifeq ($(shell id -u),0)
+init:
+	dnf -y install git
 
-sources: $(outdir) init
-	# download source archive and vendor
-	cd $(outdir) && \
-	curl -L $(SOURCE_URL)/archive/$(TAG)/$(NAME)-$(VERSION).tar.gz -o $(NAME)-$(VERSION).tar.gz && \
-	tar -xzf $(NAME)-$(VERSION).tar.gz && \
-	cd $(NAME)-$(VERSION) && \
+	# install go 1.16.3
+	curl -L https://golang.org/dl/go1.16.3.linux-amd64.tar.gz -o go1.16.3.linux-amd64.tar.gz
+	rm -rf /usr/local/go && tar -C /usr/local -xzf go1.16.3.linux-amd64.tar.gz
+	export PATH=$PATH:/usr/local/go/bin
+else
+init:
+	sudo dnf -y install git golang
+endif
+
+.ONESHELL:
+source: init $(outdir)
+	cd $(outdir)
+	curl -L https://github.com/v2fly/v2ray-core/archive/v$(version)/$(name)-$(version).tar.gz -o $(name)-$(version).tar.gz
+	tar xzf $(name)-$(version).tar.gz
+	cd $(name)-$(version)
 	go mod vendor
-	# compress vendor
-	cd $(outdir)/$(NAME)-$(VERSION) && \
-	tar -czf $(outdir)/vendor.tar.gz vendor
-	# build config and systemd unit files
-	cp $(outdir)/$(NAME)-$(VERSION)/release/config/config.json $(outdir)/config.json
-	sed -e "s|User=.*|DynamicUser=true|" $(outdir)/$(NAME)-$(VERSION)/release/debian/v2ray.service >$(outdir)/v2ray.service
-	sed -e "s|User=.*|DynamicUser=true|" $(outdir)/$(NAME)-$(VERSION)/release/debian/v2ray@.service >$(outdir)/v2ray@.service
-	sed \
-	-e "/\[Service\]/a User=v2ray" \
-	-e "s|-config|-confdir|g" \
-	-e "s|/etc/v2ray/config.json|/etc/v2ray.confdir|g" \
-	$(outdir)/v2ray.service >$(outdir)/v2ray-confdir.service
-	# remove decompressed source archive
-	rm -rf $(outdir)/$(NAME)-$(VERSION)
+	cd ..
+	tar czf $(name)-$(version)-vendored.tar.gz $(name)-$(version)
 
-srpm: $(outdir) spec sources
+	# Miscellaneous
+	rm -rf $(outdir)/$(name)-$(version) $(outdir)/$(name)-$(version).tar.gz
+	cp $(PROJECT_ROOT)/sources/* $(outdir)
+	cp $(spec) $(outdir)
+
+srpm: $(outdir) $(spec) source
 	rpmbuild \
 	--define "_sourcedir $(outdir)" \
 	--define "_srcrpmdir $(outdir)" \
-	-bs $(outdir)/$(NAME).spec
+	-bs $(spec)
 
 clean:
 	rm -rf $(outdir)
 
-.PHONY: all init spec sources srpm clean
+.PHONY: all init source srpm clean
