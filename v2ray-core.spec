@@ -2,7 +2,7 @@
 
 # https://github.com/v2fly/v2ray-core
 %global goipath         github.com/v2fly/v2ray-core/v4
-Version:                4.37.3
+Version:                4.38.0
 
 %gometa
 
@@ -10,7 +10,7 @@ Version:                4.37.3
 %global godocs          README.md SECURITY.md
 
 Name:                   v2ray-core
-Release:                2%{?dist}
+Release:                1%{?dist}
 Summary:                A platform for building proxies to bypass network restrictions
 License:                MIT
 URL:                    https://www.v2fly.org/
@@ -203,5 +203,8 @@ fi
 # << Scriptlets
 
 %changelog
+* Sat Apr 17 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.0-1
+- Update to 4.38.0
+
 * Fri Apr 16 2021 sixg0000d <sixg0000d@gmail.com> - 4.37.3-1
 - Initial v2ray-core
