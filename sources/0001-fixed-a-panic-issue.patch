@@ -1,0 +1,37 @@
+From 8ba4ac15acb9f6326e94ebcb57ab2d120099b969 Mon Sep 17 00:00:00 2001
+From: Shelikhoo <xiaokangwang@outlook.com>
+Date: Sun, 18 Apr 2021 23:45:51 +0100
+Subject: [PATCH] fixed a panic issue caused by not checking type of input
+ address in fake dns
+
+---
+ app/dns/fakedns/fake.go | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/app/dns/fakedns/fake.go b/app/dns/fakedns/fake.go
+index c95120d4..8aa6624a 100644
+--- a/app/dns/fakedns/fake.go
++++ b/app/dns/fakedns/fake.go
+@@ -24,6 +24,9 @@ type Holder struct {
+ }
+ 
+ func (fkdns *Holder) IsIPInIPPool(ip net.Address) bool {
++	if ip.Family().IsDomain() {
++		return false
++	}
+ 	return fkdns.ipRange.Contains(ip.IP())
+ }
+ 
+@@ -139,6 +142,9 @@ type HolderMulti struct {
+ }
+ 
+ func (h *HolderMulti) IsIPInIPPool(ip net.Address) bool {
++	if ip.Family().IsDomain() {
++		return false
++	}
+ 	for _, v := range h.holders {
+ 		if v.IsIPInIPPool(ip) {
+ 			return true
+-- 
+2.30.2
+

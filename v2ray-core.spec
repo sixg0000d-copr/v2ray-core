@@ -10,7 +10,7 @@ Version:                4.38.0
 %global godocs          README.md SECURITY.md
 
 Name:                   v2ray-core
-Release:                1%{?dist}
+Release:                2%{?dist}
 Summary:                A platform for building proxies to bypass network restrictions
 License:                MIT
 URL:                    https://www.v2fly.org/
@@ -35,6 +35,9 @@ Source20:               null.json
 Source21:               00_log.json
 Source22:               03_routing.json
 Source23:               06_outbounds.json
+
+# https://github.com/v2fly/v2ray-core/issues/919
+Patch1:                 0001-fixed-a-panic-issue.patch
 
 BuildRequires:  systemd-rpm-macros
 
@@ -64,7 +67,7 @@ Enable multiple config for v2ray.
 %if 0%{?fedora}
 %goprep -k
 %else
-%forgeautosetup
+%forgesetup
 %global gobuilddir  %{_builddir}/%{archivename}/_build
 if [[ ! -e "%{gobuilddir}/bin" ]] ; then
     install -m 0755 -vd %{gobuilddir}/bin
@@ -77,6 +80,8 @@ if [[ ! -e "%{gosourcedir}" ]] ; then
 fi
 cd %{gosourcedir}
 %endif
+
+%patch1 -p 1
 
 
 %build
@@ -203,6 +208,9 @@ fi
 # << Scriptlets
 
 %changelog
+* Mon Apr 19 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.0-2
+- Patch: fixed a panic issue
+
 * Sat Apr 17 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.0-1
 - Update to 4.38.0
 
