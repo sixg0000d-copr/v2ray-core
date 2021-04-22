@@ -2,6 +2,7 @@
 
 # https://github.com/v2fly/v2ray-core
 %global goipath         github.com/v2fly/v2ray-core/v4
+%global commit          a21e4a7deb2d60b40ea4ebcedf6e22a56dcb4d04
 Version:                4.38.0
 
 %gometa
@@ -20,14 +21,14 @@ Project V is a set of network tools that help you to build your own computer
 network. It secures your network connections and thus protects your privacy.
 For more details please see %{url}}
 
-# Source0 is created by:
-# curl -L https://github.com/v2fly/v2ray-core/archive/v%%{version}/%%{name}-%%{version}.tar.gz -o %%{name}-%%{version}.tar.gz
-# tar xzf %%{name}-%%{version}.tar.gz
-# cd %%{name}-%%{version}
+# Source0 & Source1 is created by:
+# spectool -g -s 0 v2ray-core.spec
+# tar xzf %%{archivename}.tar.gz
+# cd %%{archivename}
 # go mod vendor
-# cd ..
-# tar czf %%{name}-%%{version}-vendored.tar.gz %%{name}-%%{version}
-Source0:                %{name}-%{version}-vendored.tar.gz
+# tar czf ../%%{archivename}-vendor.tar.gz vendor
+Source0:                %{gosource}
+Source1:                %{archivename}-vendor.tar.gz
 Source10:               v2ray.service
 Source11:               v2ray@.service
 Source12:               v2ray-confdir.service
@@ -77,6 +78,8 @@ if [[ ! -e "%{gosourcedir}" ]] ; then
 fi
 cd %{gosourcedir}
 %endif
+# go vendor
+%setup -qTD -a 1 %{forgesetupargs}
 
 
 %build
@@ -203,6 +206,9 @@ fi
 # << Scriptlets
 
 %changelog
+* Thu Apr 22 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.0-2.20210422gita21e4a7
+- Update to 4.38.0-2.20210422gita21e4a7
+
 * Mon Apr 19 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.0-2
 - Patch: fixed a panic issue
 

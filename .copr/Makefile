@@ -3,8 +3,8 @@ PROJECT_ROOT := $(abspath $(MAKEFILE_DIR)/..)
 
 spec := $(or $(spec), $(PROJECT_ROOT)/v2ray-core.spec)
 outdir := $(or $(outdir), $(PROJECT_ROOT)/outdir)
-name := $(shell awk '/Name:/ { print $$2 }' $(spec))
-version := $(shell awk '/Version:/ { print $$2 }' $(spec))
+source0 := $(shell spectool -s 0 $(spec) | awk '/Source0:/ { print $$2 }')
+name-version := $(shell basename -s .tar.gz $(source0))
 
 all: srpm
 
@@ -13,7 +13,7 @@ $(outdir):
 
 ifeq ($(shell id -u),0)
 init:
-	dnf -y install git
+	dnf -y install git rpmdevtools
 
 	# install go 1.16.3
 	curl -L https://golang.org/dl/go1.16.3.linux-amd64.tar.gz -o go1.16.3.linux-amd64.tar.gz
@@ -21,21 +21,21 @@ init:
 export PATH := $(PATH):/usr/local/go/bin
 else
 init:
-	sudo dnf -y install git golang
+	sudo dnf -y install git golang rpmdevtools
 endif
 
 .ONESHELL:
 source: init $(outdir)
 	cd $(outdir)
-	curl -L https://github.com/v2fly/v2ray-core/archive/v$(version)/$(name)-$(version).tar.gz -o $(name)-$(version).tar.gz
-	tar xzf $(name)-$(version).tar.gz
-	cd $(name)-$(version)
+	spectool -g -s 0 $(spec)
+	tar xzf $(name-version).tar.gz
+	cd $(name-version)
 	go mod vendor
+	tar czf ../$(name-version)-vendor.tar.gz vendor
 	cd ..
-	tar czf $(name)-$(version)-vendored.tar.gz $(name)-$(version)
 
 	# Miscellaneous
-	rm -rf $(outdir)/$(name)-$(version) $(outdir)/$(name)-$(version).tar.gz
+	rm -rf $(outdir)/$(name-version)
 	cp $(PROJECT_ROOT)/sources/* $(outdir)
 	cp $(spec) $(outdir)
 
