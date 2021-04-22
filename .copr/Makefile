@@ -18,7 +18,7 @@ ifeq ($(shell id -u),0)
 init:
 	dnf -y install git rpmdevtools
 
-	# install go $(go-version)
+	# install $(go-version)
 	curl -L https://golang.org/dl/$(go-version).$(os)-$(arch).tar.gz -o $(go-version).$(os)-$(arch).tar.gz
 	rm -rf /usr/local/go && tar -C /usr/local -xzf $(go-version).$(os)-$(arch).tar.gz
 export PATH := $(PATH):/usr/local/go/bin
