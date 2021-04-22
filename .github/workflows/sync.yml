@@ -37,6 +37,7 @@ jobs:
         if: ${{ env.CURRENT_VERSION != env.LATEST_VERSION }}
         name: Update specfile version
         run: |
+          sed -E -i '/%global commit/d' v2ray-core.spec
           sed -E -i "s/(Version:\s+).*/\1${{ env.LATEST_VERSION }}/g" v2ray-core.spec
           sed -E -i "s/(Release:\s+).*/\11%{?dist}/g" v2ray-core.spec
           sed -E -i "/%changelog/a * $(LANG=C date +'%a %b %d %Y') sixg0000d <sixg0000d@gmail.com> - ${{ env.LATEST_VERSION }}-1\n- Update to ${{ env.LATEST_VERSION }}\n" v2ray-core.spec
