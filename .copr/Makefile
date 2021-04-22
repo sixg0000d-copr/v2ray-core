@@ -1,8 +1,8 @@
 MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 PROJECT_ROOT := $(abspath $(MAKEFILE_DIR)/..)
 
-spec = $(or $(spec), $(PROJECT_ROOT)/v2ray-core.spec)
-outdir = $(or $(outdir), $(PROJECT_ROOT)/outdir)
+spec ?= $(PROJECT_ROOT)/v2ray-core.spec
+outdir ?= $(PROJECT_ROOT)/outdir
 source0 = $(shell spectool -s 0 $(spec) | awk '/Source0:/ { print $$2 }')
 name-version = $(shell basename -s .tar.gz $(source0))
 
