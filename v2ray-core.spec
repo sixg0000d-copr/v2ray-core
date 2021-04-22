@@ -36,10 +36,7 @@ Source21:               00_log.json
 Source22:               03_routing.json
 Source23:               06_outbounds.json
 
-# https://github.com/v2fly/v2ray-core/issues/919
-Patch1:                 0001-fixed-a-panic-issue.patch
-
-BuildRequires:  systemd-rpm-macros
+BuildRequires:          systemd-rpm-macros
 
 %{?systemd_requires}
 Requires:               systemd >= 232
@@ -80,8 +77,6 @@ if [[ ! -e "%{gosourcedir}" ]] ; then
 fi
 cd %{gosourcedir}
 %endif
-
-%patch1 -p 1
 
 
 %build
