@@ -11,7 +11,7 @@ Version:                4.38.0
 %global godocs          README.md SECURITY.md
 
 Name:                   v2ray-core
-Release:                2%{?dist}
+Release:                3%{?dist}
 Summary:                A platform for building proxies to bypass network restrictions
 License:                MIT
 URL:                    https://www.v2fly.org/
@@ -127,6 +127,7 @@ install -m 0644 -vp %{S:20}                                   %{buildroot}%{_sys
 install -m 0644 -vp %{S:20}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/09_reverse.json
 install -m 0644 -vp %{S:20}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/10_fakedns.json
 install -m 0644 -vp %{S:20}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/11_browserForwarder.json
+install -m 0644 -vp %{S:20}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/12_observatory.json
 # install: systemd
 install -m 0755 -vd                                           %{buildroot}%{_unitdir}
 install -m 0644 -vp %{S:10}                                   %{buildroot}%{_unitdir}/v2ray.service
@@ -167,6 +168,7 @@ install -m 0755 -vd                                           %{buildroot}%{_dat
 %config(noreplace) %{_sysconfdir}/v2ray.confdir/09_reverse.json
 %config(noreplace) %{_sysconfdir}/v2ray.confdir/10_fakedns.json
 %config(noreplace) %{_sysconfdir}/v2ray.confdir/11_browserForwarder.json
+%config(noreplace) %{_sysconfdir}/v2ray.confdir/12_observatory.json
 # systemd
 %{_unitdir}/v2ray-confdir.service
 
@@ -206,6 +208,9 @@ fi
 # << Scriptlets
 
 %changelog
+* Sat Apr 24 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.0-3.20210422gita21e4a7
+- Add 12_observatory.json for v2ray-confdir
+
 * Thu Apr 22 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.0-2.20210422gita21e4a7
 - Update to 4.38.0-2.20210422gita21e4a7
 
