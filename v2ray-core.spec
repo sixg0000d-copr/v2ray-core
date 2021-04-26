@@ -2,8 +2,7 @@
 
 # https://github.com/v2fly/v2ray-core
 %global goipath         github.com/v2fly/v2ray-core/v4
-%global commit          a21e4a7deb2d60b40ea4ebcedf6e22a56dcb4d04
-Version:                4.38.0
+Version:                4.38.1
 
 %gometa
 
@@ -11,7 +10,7 @@ Version:                4.38.0
 %global godocs          README.md SECURITY.md
 
 Name:                   v2ray-core
-Release:                3%{?dist}
+Release:                1%{?dist}
 Summary:                A platform for building proxies to bypass network restrictions
 License:                MIT
 URL:                    https://www.v2fly.org/
@@ -208,6 +207,9 @@ fi
 # << Scriptlets
 
 %changelog
+* Mon Apr 26 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.1-1
+- Update to 4.38.1
+
 * Sat Apr 24 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.0-3.20210422gita21e4a7
 - Add 12_observatory.json for v2ray-confdir
 
