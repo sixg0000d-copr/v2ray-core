@@ -2,7 +2,7 @@
 
 # https://github.com/v2fly/v2ray-core
 %global goipath         github.com/v2fly/v2ray-core/v4
-Version:                4.38.1
+Version:                4.38.2
 
 %gometa
 
@@ -207,6 +207,9 @@ fi
 # << Scriptlets
 
 %changelog
+* Fri Apr 30 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.2-1
+- Update to 4.38.2
+
 * Mon Apr 26 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.1-1
 - Update to 4.38.1
 
