@@ -24,7 +24,6 @@ init:
 export PATH := $(PATH):/usr/local/go/bin
 else
 init:
-	sudo dnf copr enable sixg0000d/golang
 	sudo dnf -y install git golang rpmdevtools
 endif
 
