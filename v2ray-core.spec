@@ -10,7 +10,7 @@ Version:                4.38.3
 %global godocs          README.md SECURITY.md
 
 Name:                   v2ray-core
-Release:                1%{?dist}
+Release:                2%{?dist}
 Summary:                A platform for building proxies to bypass network restrictions
 License:                MIT
 URL:                    https://www.v2fly.org/
@@ -136,6 +136,29 @@ install -m 0644 -vp %{S:12}                                   %{buildroot}%{_uni
 install -m 0755 -vd                                           %{buildroot}%{_datadir}/v2ray
 
 
+%post
+%systemd_post v2ray.service v2ray@.service
+
+%preun
+# See https://github.com/systemd/systemd/issues/15620
+INSTANCES=$(/usr/bin/systemctl list-units --type=service --state=active --no-legend --no-pager 'v2ray*' | /usr/bin/awk '{print $1}')
+%systemd_preun $INSTANCES
+
+%postun
+# See https://github.com/systemd/systemd/issues/15620
+INSTANCES=$(/usr/bin/systemctl list-units --type=service --state=active --no-legend --no-pager 'v2ray*' | /usr/bin/awk '{print $1}')
+%systemd_postun_with_restart $INSTANCES
+
+%post -n v2ray-confdir
+%systemd_post v2ray-confdir.service
+
+%preun -n v2ray-confdir
+%systemd_preun v2ray-confdir.service
+
+%postun -n v2ray-confdir
+%systemd_postun_with_restart v2ray-confdir.service
+
+
 %files
 %license %{golicenses}
 %doc %{godocs}
@@ -172,41 +195,10 @@ install -m 0755 -vd                                           %{buildroot}%{_dat
 %{_unitdir}/v2ray-confdir.service
 
 
-# Scriptlets >>
-%post
-%systemd_post v2ray.service
-%systemd_post v2ray@.service
-
-%preun
-%systemd_preun v2ray.service
-
-if [ $1 -eq 0 ]; then
-    # Package removal, not upgrade
-    if [ -x /usr/bin/systemctl ]; then
-        # systemd_preun uses systemctl disable --now which doesn't work well with template services.
-        # See https://github.com/systemd/systemd/issues/15620
-        # The following lines mimicks its behaviour by running two commands:
-        # disable and stop all the v2ray services
-        systemctl --no-reload disable v2ray@.service || :
-        systemctl stop "v2ray@*.service" || :
-    fi
-fi
-
-%postun
-%systemd_postun_with_restart "v2ray.service"
-%systemd_postun_with_restart "v2ray@*.service"
-# --------------------------- v2ray-confdir ---------------------------
-%post -n v2ray-confdir
-%systemd_post v2ray-confdir.service
-
-%preun -n v2ray-confdir
-%systemd_preun v2ray-confdir.service
-
-%postun -n v2ray-confdir
-%systemd_postun_with_restart v2ray-confdir.service
-# << Scriptlets
-
 %changelog
+* Sun May 02 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.3-2
+- Update scirptlets
+
 * Sat May 01 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.3-1
 - Update to 4.38.3
 
