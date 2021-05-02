@@ -48,7 +48,13 @@ srpm: $(outdir) $(spec) source
 	--define "_srcrpmdir $(outdir)" \
 	-bs $(spec)
 
+rpm: $(outdir) $(spec) source
+	rpmbuild \
+	--define "_sourcedir $(outdir)" \
+	--define "_srcrpmdir $(outdir)" \
+	-bb $(spec)
+
 clean:
 	rm -rf $(outdir)
 
-.PHONY: all init source srpm clean
+.PHONY: all init source srpm rpm clean
