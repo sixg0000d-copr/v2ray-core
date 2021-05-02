@@ -51,7 +51,7 @@ srpm: $(outdir) $(spec) source
 rpm: $(outdir) $(spec) source
 	rpmbuild \
 	--define "_sourcedir $(outdir)" \
-	--define "_srcrpmdir $(outdir)" \
+	--define "_rpmdir $(outdir)" \
 	-bb $(spec)
 
 clean:
