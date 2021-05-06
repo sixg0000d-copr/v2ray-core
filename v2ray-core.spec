@@ -2,7 +2,7 @@
 
 # https://github.com/v2fly/v2ray-core
 %global goipath         github.com/v2fly/v2ray-core/v4
-Version:                4.38.3
+Version:                4.39.0
 
 %gometa
 
@@ -10,7 +10,7 @@ Version:                4.38.3
 %global godocs          README.md SECURITY.md
 
 Name:                   v2ray-core
-Release:                3%{?dist}
+Release:                1%{?dist}
 Summary:                A platform for building proxies to bypass network restrictions
 License:                MIT
 URL:                    https://www.v2fly.org/
@@ -222,6 +222,9 @@ INSTANCES=$(/usr/bin/systemctl list-units --type=service --state=active --no-leg
 
 
 %changelog
+* Thu May 06 2021 sixg0000d <sixg0000d@gmail.com> - 4.39.0-1
+- Update to 4.39.0
+
 * Thu May 06 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.3-3
 - Add v2ray-extra
 - Patch systemd unit files, instead of directly storage
