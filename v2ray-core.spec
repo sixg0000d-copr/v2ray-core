@@ -10,7 +10,7 @@ Version:                4.38.3
 %global godocs          README.md SECURITY.md
 
 Name:                   v2ray-core
-Release:                2%{?dist}
+Release:                3%{?dist}
 Summary:                A platform for building proxies to bypass network restrictions
 License:                MIT
 URL:                    https://www.v2fly.org/
@@ -52,12 +52,23 @@ Summary:                Enable multiple config for v2ray
 Requires:               systemd >= 232
 Requires:               %{name}%{?_isa} = %{version}-%{release}
 
+%package -n v2ray-extra
+Summary:                Browser forwarder asset for v2ray
+Requires:               %{name}%{?_isa} = %{version}-%{release}
+
 %description
 %{common_description}
 
 
 %description -n v2ray-confdir
 Enable multiple config for v2ray.
+
+
+%description -n v2ray-extra
+Browser forwarder:
+Use browser's WebSocket framework to automatically relay v2ray traffic,
+which will have the same TLS fingerprint as browser initialized WSS traffic.
+There are v2ray browser forwarder asset files.
 
 
 %prep
@@ -77,6 +88,8 @@ if [[ ! -e "%{gosourcedir}" ]] ; then
 fi
 cd %{gosourcedir}
 %endif
+%global v2ray_asset %{gosourcedir}/release
+
 # go vendor
 %setup -qTD -a 1 %{forgesetupargs}
 
@@ -106,34 +119,38 @@ go build \
 
 %install
 # install: binaries
-install -m 0755 -vd                                           %{buildroot}%{_bindir}
-install -m 0755 -vp %{gobuilddir}/bin/v2ray                   %{buildroot}%{_bindir}/v2ray
-install -m 0755 -vp %{gobuilddir}/bin/v2ctl                   %{buildroot}%{_bindir}/v2ctl
+install -m 0755 -vd                                                   %{buildroot}%{_bindir}
+install -m 0755 -vp %{gobuilddir}/bin/v2ray                           %{buildroot}%{_bindir}/v2ray
+install -m 0755 -vp %{gobuilddir}/bin/v2ctl                           %{buildroot}%{_bindir}/v2ctl
 # install: config
-install -m 0755 -vd                                           %{buildroot}%{_sysconfdir}/v2ray
-install -m 0644 -vp %{gosourcedir}/release/config/config.json %{buildroot}%{_sysconfdir}/v2ray/config.json
+install -m 0755 -vd                                                   %{buildroot}%{_sysconfdir}/v2ray
+install -m 0644 -vp %{v2ray_asset}/config/config.json                 %{buildroot}%{_sysconfdir}/v2ray/config.json
 # install: v2ray-confdir configs
-install -m 0755 -vd                                           %{buildroot}%{_sysconfdir}/v2ray.confdir
-install -m 0644 -vp %{S:21}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/00_log.json
-install -m 0644 -vp %{S:20}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/01_api.json
-install -m 0644 -vp %{S:20}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/02_dns.json
-install -m 0644 -vp %{S:22}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/03_routing.json
-install -m 0644 -vp %{S:20}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/04_policy.json
-install -m 0644 -vp %{S:20}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/05_inbounds.json
-install -m 0644 -vp %{S:23}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/06_outbounds.json
-install -m 0644 -vp %{S:20}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/07_transport.json
-install -m 0644 -vp %{S:20}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/08_stats.json
-install -m 0644 -vp %{S:20}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/09_reverse.json
-install -m 0644 -vp %{S:20}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/10_fakedns.json
-install -m 0644 -vp %{S:20}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/11_browserForwarder.json
-install -m 0644 -vp %{S:20}                                   %{buildroot}%{_sysconfdir}/v2ray.confdir/12_observatory.json
+install -m 0755 -vd                                                   %{buildroot}%{_sysconfdir}/v2ray.confdir
+install -m 0644 -vp %{S:21}                                           %{buildroot}%{_sysconfdir}/v2ray.confdir/00_log.json
+install -m 0644 -vp %{S:20}                                           %{buildroot}%{_sysconfdir}/v2ray.confdir/01_api.json
+install -m 0644 -vp %{S:20}                                           %{buildroot}%{_sysconfdir}/v2ray.confdir/02_dns.json
+install -m 0644 -vp %{S:22}                                           %{buildroot}%{_sysconfdir}/v2ray.confdir/03_routing.json
+install -m 0644 -vp %{S:20}                                           %{buildroot}%{_sysconfdir}/v2ray.confdir/04_policy.json
+install -m 0644 -vp %{S:20}                                           %{buildroot}%{_sysconfdir}/v2ray.confdir/05_inbounds.json
+install -m 0644 -vp %{S:23}                                           %{buildroot}%{_sysconfdir}/v2ray.confdir/06_outbounds.json
+install -m 0644 -vp %{S:20}                                           %{buildroot}%{_sysconfdir}/v2ray.confdir/07_transport.json
+install -m 0644 -vp %{S:20}                                           %{buildroot}%{_sysconfdir}/v2ray.confdir/08_stats.json
+install -m 0644 -vp %{S:20}                                           %{buildroot}%{_sysconfdir}/v2ray.confdir/09_reverse.json
+install -m 0644 -vp %{S:20}                                           %{buildroot}%{_sysconfdir}/v2ray.confdir/10_fakedns.json
+install -m 0644 -vp %{S:20}                                           %{buildroot}%{_sysconfdir}/v2ray.confdir/11_browserForwarder.json
+install -m 0644 -vp %{S:20}                                           %{buildroot}%{_sysconfdir}/v2ray.confdir/12_observatory.json
 # install: systemd
-install -m 0755 -vd                                           %{buildroot}%{_unitdir}
-install -m 0644 -vp %{S:10}                                   %{buildroot}%{_unitdir}/v2ray.service
-install -m 0644 -vp %{S:11}                                   %{buildroot}%{_unitdir}/v2ray@.service
-install -m 0644 -vp %{S:12}                                   %{buildroot}%{_unitdir}/v2ray-confdir.service
+install -m 0755 -vd                                                   %{buildroot}%{_unitdir}
+install -m 0644 -vp %{S:10}                                           %{buildroot}%{_unitdir}/v2ray.service
+install -m 0644 -vp %{S:11}                                           %{buildroot}%{_unitdir}/v2ray@.service
+install -m 0644 -vp %{S:12}                                           %{buildroot}%{_unitdir}/v2ray-confdir.service
 # install: v2ray assets directory
-install -m 0755 -vd                                           %{buildroot}%{_datadir}/v2ray
+install -m 0755 -vd                                                   %{buildroot}%{_datadir}/v2ray
+# install: v2ray extra
+install -m 0755 -vd                                                   %{buildroot}%{_datadir}/v2ray/browserforwarder
+install -m 0644 -vp %{v2ray_asset}/extra/browserforwarder/index.html  %{buildroot}%{_datadir}/v2ray/browserforwarder/index.html
+install -m 0644 -vp %{v2ray_asset}/extra/browserforwarder/index.js    %{buildroot}%{_datadir}/v2ray/browserforwarder/index.js
 
 
 %post
@@ -195,7 +212,16 @@ INSTANCES=$(/usr/bin/systemctl list-units --type=service --state=active --no-leg
 %{_unitdir}/v2ray-confdir.service
 
 
+%files -n v2ray-extra
+%dir %{_datadir}/v2ray/browserforwarder
+%{_datadir}/v2ray/browserforwarder/index.html
+%{_datadir}/v2ray/browserforwarder/index.js
+
+
 %changelog
+* Thu May 06 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.3-3
+- Add v2ray-extra
+
 * Sun May 02 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.3-2
 - Update scirptlets
 
