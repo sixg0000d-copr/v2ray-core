@@ -28,13 +28,13 @@ For more details please see %{url}}
 # tar czf ../%%{archivename}-vendor.tar.gz vendor
 Source0:                %{gosource}
 Source1:                %{archivename}-vendor.tar.gz
-Source10:               v2ray.service
-Source11:               v2ray@.service
-Source12:               v2ray-confdir.service
+Source10:               v2ray-confdir.service
 Source20:               null.json
 Source21:               00_log.json
 Source22:               03_routing.json
 Source23:               06_outbounds.json
+
+Patch1:                 0001-use-DynamicUser-instead-of-nobody.patch
 
 BuildRequires:          systemd-rpm-macros
 
@@ -73,7 +73,7 @@ There are v2ray browser forwarder asset files.
 
 %prep
 %if 0%{?fedora}
-%goprep -k
+%goprep
 %else
 %forgesetup
 %global gobuilddir  %{_builddir}/%{archivename}/_build
@@ -89,6 +89,9 @@ fi
 cd %{gosourcedir}
 %endif
 %global v2ray_asset %{gosourcedir}/release
+
+# systemd unit files patch
+%patch1 -p 1
 
 # go vendor
 %setup -qTD -a 1 %{forgesetupargs}
@@ -142,9 +145,9 @@ install -m 0644 -vp %{S:20}                                           %{buildroo
 install -m 0644 -vp %{S:20}                                           %{buildroot}%{_sysconfdir}/v2ray.confdir/12_observatory.json
 # install: systemd
 install -m 0755 -vd                                                   %{buildroot}%{_unitdir}
-install -m 0644 -vp %{S:10}                                           %{buildroot}%{_unitdir}/v2ray.service
-install -m 0644 -vp %{S:11}                                           %{buildroot}%{_unitdir}/v2ray@.service
-install -m 0644 -vp %{S:12}                                           %{buildroot}%{_unitdir}/v2ray-confdir.service
+install -m 0644 -vp %{v2ray_asset}/debian/v2ray.service               %{buildroot}%{_unitdir}/v2ray.service
+install -m 0644 -vp %{v2ray_asset}/debian/v2ray@.service              %{buildroot}%{_unitdir}/v2ray@.service
+install -m 0644 -vp %{S:10}                                           %{buildroot}%{_unitdir}/v2ray-confdir.service
 # install: v2ray assets directory
 install -m 0755 -vd                                                   %{buildroot}%{_datadir}/v2ray
 # install: v2ray extra
@@ -221,6 +224,7 @@ INSTANCES=$(/usr/bin/systemctl list-units --type=service --state=active --no-leg
 %changelog
 * Thu May 06 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.3-3
 - Add v2ray-extra
+- Patch systemd unit files, instead of directly storage
 
 * Sun May 02 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.3-2
 - Update scirptlets
