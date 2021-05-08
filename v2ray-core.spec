@@ -34,6 +34,7 @@ Source21:               00_log.json
 Source22:               03_routing.json
 Source23:               06_outbounds.json
 
+# systemd unit files patch
 Patch1:                 0001-use-DynamicUser-instead-of-nobody.patch
 
 BuildRequires:          systemd-rpm-macros
@@ -74,8 +75,9 @@ There are v2ray browser forwarder asset files.
 %prep
 %if 0%{?fedora}
 %goprep
+%patch1 -p 1
 %else
-%forgesetup
+%forgeautosetup -p 1
 %global gobuilddir  %{_builddir}/%{archivename}/_build
 if [[ ! -e "%{gobuilddir}/bin" ]] ; then
     install -m 0755 -vd %{gobuilddir}/bin
@@ -89,9 +91,6 @@ fi
 cd %{gosourcedir}
 %endif
 %global v2ray_asset %{gosourcedir}/release
-
-# systemd unit files patch
-%patch1 -p 1
 
 # go vendor
 %setup -qTD -a 1 %{forgesetupargs}
@@ -225,6 +224,7 @@ INSTANCES=$(/usr/bin/systemctl list-units --type=service --state=active --no-leg
 * Thu May 06 2021 sixg0000d <sixg0000d@gmail.com> - 4.39.0-1
 - Update to 4.39.0
 - Remove space from the end of LDFLAGS
+- Update prep
 
 * Thu May 06 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.3-3
 - Add v2ray-extra
