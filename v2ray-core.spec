@@ -99,12 +99,12 @@ cd %{gosourcedir}
 
 %build
 # build: binaries
-export LDFLAGS="-linkmode=external "
+export LDFLAGS="-linkmode=external"
 %gobuild -o %{gobuilddir}/bin/v2ray %{goipath}/main
 unset LDFLAGS
 
 %if 0%{?fedora}
-export LDFLAGS="-linkmode=external " BUILDTAGS="confonly"
+export LDFLAGS="-linkmode=external" BUILDTAGS="confonly"
 %gobuild -o %{gobuilddir}/bin/v2ctl %{goipath}/infra/control/main
 unset LDFLAGS BUILDTAGS
 %else
@@ -224,6 +224,7 @@ INSTANCES=$(/usr/bin/systemctl list-units --type=service --state=active --no-leg
 %changelog
 * Thu May 06 2021 sixg0000d <sixg0000d@gmail.com> - 4.39.0-1
 - Update to 4.39.0
+- Remove space from the end of LDFLAGS
 
 * Thu May 06 2021 sixg0000d <sixg0000d@gmail.com> - 4.38.3-3
 - Add v2ray-extra
