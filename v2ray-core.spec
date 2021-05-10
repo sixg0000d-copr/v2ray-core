@@ -2,7 +2,7 @@
 
 # https://github.com/v2fly/v2ray-core
 %global goipath         github.com/v2fly/v2ray-core/v4
-Version:                4.39.0
+Version:                4.39.1
 
 %gometa
 
@@ -221,6 +221,9 @@ INSTANCES=$(/usr/bin/systemctl list-units --type=service --state=active --no-leg
 
 
 %changelog
+* Mon May 10 2021 sixg0000d <sixg0000d@gmail.com> - 4.39.1-1
+- Update to 4.39.1
+
 * Thu May 06 2021 sixg0000d <sixg0000d@gmail.com> - 4.39.0-1
 - Update to 4.39.0
 - Remove space from the end of LDFLAGS
