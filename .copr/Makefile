@@ -5,9 +5,6 @@ spec ?= $(PROJECT_ROOT)/v2ray-core.spec
 outdir ?= $(PROJECT_ROOT)/outdir
 source0 = $(shell spectool -s 0 $(spec) | awk '/Source0:/ { print $$2 }')
 name-version = $(shell basename -s .tar.gz $(source0))
-go-version = $(shell curl -L 'https://golang.org/VERSION?m=text')
-os = $(shell uname -s | tr A-Z a-z)
-arch = $(shell uname -m | sed -e 's/aarch64/arm64/' -e 's/x86_64/amd64/')
 
 all: srpm
 
@@ -16,12 +13,7 @@ $(outdir):
 
 ifeq ($(shell id -u),0)
 init:
-	dnf -y install git rpmdevtools
-
-	# install $(go-version)
-	curl -L https://golang.org/dl/$(go-version).$(os)-$(arch).tar.gz -o $(go-version).$(os)-$(arch).tar.gz
-	rm -rf /usr/local/go && tar -C /usr/local -xzf $(go-version).$(os)-$(arch).tar.gz
-export PATH := $(PATH):/usr/local/go/bin
+	dnf -y install git golang rpmdevtools
 else
 init:
 	sudo dnf -y install git golang rpmdevtools
