@@ -31,7 +31,7 @@ jobs:
         name: Get versions
         run: |
           echo "CURRENT_VERSION=$(awk '/Version:/ { print $2 }' v2ray-core.spec)" >> $GITHUB_ENV
-          echo "LATEST_VERSION=$(echo ${{ steps.get-release.outputs.release }} | sed 's/v//g')" >> $GITHUB_ENV
+          echo "LATEST_VERSION=$(echo ${{ steps.get-release.outputs.release }} | sed -E 's/^v(.*)/\1/g')" >> $GITHUB_ENV
 
       - id: bump-version
         if: ${{ env.CURRENT_VERSION != env.LATEST_VERSION }}
