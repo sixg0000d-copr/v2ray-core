@@ -2,7 +2,7 @@
 
 # https://github.com/v2fly/v2ray-core
 %global goipath         github.com/v2fly/v2ray-core/v4
-Version:                4.41.1
+Version:                4.42.1
 
 %gometa
 
@@ -221,6 +221,9 @@ INSTANCES=$(/usr/bin/systemctl list-units --type=service --state=active --no-leg
 
 
 %changelog
+* Sat Sep 04 2021 sixg0000d <sixg0000d@gmail.com> - 4.42.1-1
+- Update to 4.42.1
+
 * Sat Jul 31 2021 sixg0000d <sixg0000d@gmail.com> - 4.41.1-1
 - Update to 4.41.1
 
