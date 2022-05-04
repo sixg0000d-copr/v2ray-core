@@ -74,7 +74,7 @@ There are v2ray browser forwarder asset files.
 %if 0%{?fedora}
 %goprep
 %else
-%forgeautosetup -p 1
+%forgeautosetup
 %global gobuilddir  %{_builddir}/%{archivename}/_build
 if [[ ! -e "%{gobuilddir}/bin" ]] ; then
     install -m 0755 -vd %{gobuilddir}/bin
