@@ -2,7 +2,7 @@
 
 # https://github.com/v2fly/v2ray-core
 %global goipath         github.com/v2fly/v2ray-core/v4
-Version:                4.45.0
+Version:                4.45.2
 
 %gometa
 
