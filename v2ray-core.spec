@@ -36,7 +36,8 @@ Source22:               03_routing.json
 Source23:               06_outbounds.json
 
 BuildRequires:          systemd-rpm-macros
-
+# Temporarily specify the go version for build
+BuildRequires:          golang = 1.18.10
 %{?systemd_requires}
 Requires:               systemd >= 232
 Recommends:             %{_datadir}/v2ray/geoip.dat
