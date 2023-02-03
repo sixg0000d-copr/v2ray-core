@@ -5,7 +5,7 @@ spec ?= $(PROJECT_ROOT)/v2ray-core.spec
 outdir ?= $(PROJECT_ROOT)/outdir
 source0 = $(shell spectool -s 0 $(spec) | awk '/Source0:/ { print $$2 }')
 name-version = $(shell basename -s .tar.gz $(source0))
-go-version = "go1.18.10"
+go-version = go1.18.10
 os = $(shell uname -s | tr A-Z a-z)
 arch = $(shell uname -m | sed -e 's/aarch64/arm64/' -e 's/x86_64/amd64/')
 
