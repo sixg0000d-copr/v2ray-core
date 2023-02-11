@@ -5,7 +5,7 @@ spec ?= $(PROJECT_ROOT)/v2ray-core.spec
 outdir ?= $(PROJECT_ROOT)/outdir
 source0 = $(shell spectool -s 0 $(spec) | awk '/Source0:/ { print $$2 }')
 name-version = $(shell basename -s .tar.gz $(source0))
-go-version = go1.18.10
+go-version = 1.20
 os = $(shell uname -s | tr A-Z a-z)
 arch = $(shell uname -m | sed -e 's/aarch64/arm64/' -e 's/x86_64/amd64/')
 
@@ -19,13 +19,13 @@ init:
 	dnf -y install git rpmdevtools
 
 	# install $(go-version)
-	curl -L https://golang.org/dl/$(go-version).$(os)-$(arch).tar.gz -o $(go-version).$(os)-$(arch).tar.gz
-	rm -rf /usr/local/go && tar -C /usr/local -xzf $(go-version).$(os)-$(arch).tar.gz
+	curl -L -O https://golang.org/dl/go$(go-version).$(os)-$(arch).tar.gz
+	rm -rf /usr/local/go && tar -C /usr/local -xzf go$(go-version).$(os)-$(arch).tar.gz
 export PATH := $(PATH):/usr/local/go/bin
 else
 init:
 	sudo dnf -y install git rpmdevtools
-	sudo dnf -y install "golang = 1.18.10"
+	sudo dnf -y install "golang = $(go-version)"
 endif
 
 .ONESHELL:

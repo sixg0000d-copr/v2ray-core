@@ -2,7 +2,7 @@
 
 # https://github.com/v2fly/v2ray-core
 %global goipath         github.com/v2fly/v2ray-core/v5
-Version:                5.2.1
+Version:                5.3.0
 
 %gometa
 
@@ -35,9 +35,9 @@ Source20:               null.json
 Source22:               03_routing.json
 Source23:               06_outbounds.json
 
+# Specify the go version for build
+BuildRequires:          golang = 1.20
 BuildRequires:          systemd-rpm-macros
-# Temporarily specify the go version for build
-BuildRequires:          golang = 1.18.10
 %{?systemd_requires}
 Requires:               systemd >= 232
 Recommends:             %{_datadir}/v2ray/geoip.dat
@@ -187,6 +187,9 @@ INSTANCES=$(/usr/bin/systemctl list-units --type=service --state=active --no-leg
 
 
 %changelog
+* Sat Feb 11 2023 sixg0000d <sixg0000d@gmail.com> - 5.3.0-1
+- new version
+
 * Tue Jan 24 2023 sixg0000d <sixg0000d@gmail.com> - 5.2.1-1
 - new version
 
