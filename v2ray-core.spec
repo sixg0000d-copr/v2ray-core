@@ -61,7 +61,7 @@ Requires:               %{name}%{?_isa} = %{version}-%{release}
 
 
 %description -n v2ray-confdir
-Enable multiple config for v2ray.
+Multiple files config for v2ray.
 
 
 %description -n v2ray-extra
