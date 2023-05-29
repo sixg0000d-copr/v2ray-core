@@ -6,7 +6,7 @@ outdir ?= $(PROJECT_ROOT)/outdir
 source0 = $(shell spectool -s 0 $(spec) | awk '/Source0:/ { print $$2 }')
 name-version = $(shell basename -s .tar.gz $(source0))
 
-goversion = 1.20.3
+goversion = 1.20.4
 os = $(shell uname -s | tr A-Z a-z)
 arch = $(shell uname -m | sed -e 's/aarch64/arm64/' -e 's/x86_64/amd64/')
 
