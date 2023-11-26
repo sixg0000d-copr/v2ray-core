@@ -2,7 +2,7 @@
 
 # https://github.com/v2fly/v2ray-core
 %global goipath         github.com/v2fly/v2ray-core/v5
-Version:                5.12.0
+Version:                5.12.1
 
 %gometa
 
@@ -187,6 +187,9 @@ INSTANCES=$(/usr/bin/systemctl list-units --type=service --state=active --no-leg
 
 
 %changelog
+* Sun Nov 26 2023 sixg0000d <sixg0000d@gmail.com> - 5.12.1-1
+- new version
+
 * Wed Nov 22 2023 sixg0000d <sixg0000d@gmail.com> - 5.12.0-1
 - new version
 
