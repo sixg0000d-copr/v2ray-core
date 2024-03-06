@@ -36,7 +36,7 @@ Source22:               03_routing.json
 Source23:               06_outbounds.json
 
 # Specify the go version for build
-BuildRequires:          golang = 1.21.7
+BuildRequires:          golang = 1.21.8
 BuildRequires:          systemd-rpm-macros
 %{?systemd_requires}
 Requires:               systemd >= 232
